@@ -78,6 +78,7 @@ function handler (method) {
   var statusCode = getStatusCode(method)
   var response = (method.responses || {})[statusCode] || {}
   var bodies = response.body || {}
+    console.log(bodies);
   var headers = {}
   var types = Object.keys(bodies)
 
