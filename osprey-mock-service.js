@@ -103,6 +103,20 @@ function handler (method) {
       res.setHeader('Content-Type', type)
 
       if (body && body.example) {
+          if(body.example.periods && body.example.periods.forEach) {
+              body.example.periods.forEach(function(el){
+                  Object.keys(el).forEach(function(key) {
+                      var val = el[key];
+                      if (!isNan(val)) {
+                          if (~(~val) == val) {
+                              el[key] = ~(~Math.random()*100)
+                          } else {
+                              el[key] = Math.random()*100
+                          }
+                      }
+                  });
+              })
+          }
         res.write(body.example)
       }
     }
