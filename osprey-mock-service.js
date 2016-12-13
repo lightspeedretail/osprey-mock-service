@@ -78,7 +78,6 @@ function handler (method) {
   var statusCode = getStatusCode(method)
   var response = (method.responses || {})[statusCode] || {}
   var bodies = response.body || {}
-    console.log(bodies);
   var headers = {}
   var types = Object.keys(bodies)
 
@@ -103,26 +102,35 @@ function handler (method) {
       res.setHeader('Content-Type', type)
 
       if (body && body.example) {
-          if(body.example.periods && body.example.periods.forEach) {
-              body.example.periods.forEach(function(el){
-                  Object.keys(el).forEach(function(key) {
-                      var val = el[key];
-                      if (!isNan(val)) {
-                          if (~(~val) == val) {
-                              el[key] = ~(~Math.random()*100)
-                          } else {
-                              el[key] = Math.random()*100
-                          }
-                      }
-                  });
-              })
-          }
-        res.write(body.example)
+          var ex = JSON.parse(body.example)
+          morebetter(ex)
+          res.write(JSON.stringify(ex))
       }
     }
 
     res.end()
   }
+}
+
+function morebetter(obj){
+    Object.keys(obj).forEach(function(key) {
+        var val = obj[key];
+        if (!isNaN(val)) {
+            if (~(~val) == val) {
+                obj[key] = ~(~rnd(obj[key]))
+            } else {
+                obj[key] = Math.round(rnd(obj[key]) * 100)/100
+            }
+        } else {
+            if (typeof val == "object") {
+                morebetter(obj[key])
+            }
+        }
+    })
+}
+
+function rnd(x) {
+    return x + x * ((Math.random() * (20) - 10) / 100)
 }
 
 /**
