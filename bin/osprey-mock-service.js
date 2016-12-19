@@ -14,11 +14,16 @@ var argv = require('yargs')
   .demand(['f', 'p'])
   .describe('f', 'Path to the RAML definition')
   .describe('p', 'Port number to bind the proxy')
+  .describe('e', 'Example to load as an override to the provided RAML ones.')
   .describe('cors', 'Enable CORS with the API')
   .argv
 
 var options = {
   cors: !!argv.cors
+}
+if (argv.e) {
+    console.log(argv)
+    options.exfile = argv.e
 }
 
 mock.loadFile(argv.f, options)
@@ -28,6 +33,7 @@ mock.loadFile(argv.f, options)
     // Log API requests.
     router.use(morgan('combined'))
     router.use(app)
+
 
     var server = http.createServer(function (req, res) {
       router(req, res, finalhandler(req, res))

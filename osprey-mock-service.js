@@ -1,3 +1,4 @@
+var fs = require('fs')
 var Negotiator = require('negotiator')
 var resources = require('osprey-resources')
 var osprey = require('osprey')
@@ -34,8 +35,13 @@ function createServer (raml, options) {
   app.use(ospreyMockServer(raml))
   app.use(osprey.errorHandler())
 
+  if (options.exfile) {
+      exfile = options.exfile;
+  }
   return app
 }
+
+var exfile;
 
 /**
  * Create a mock service using the base uri path.
@@ -98,7 +104,10 @@ function handler (method) {
     res.statusCode = statusCode
     setHeaders(res, headers)
 
-    if (type) {
+    if (exfile && fs.existsSync(exfile)) {
+        var content = fs.readFileSync(exfile)
+        res.write(content)
+    } else if (type) {
       res.setHeader('Content-Type', type)
 
       if (body && body.example) {
